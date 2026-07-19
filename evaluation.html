@@ -81,11 +81,35 @@ button[disabled]{opacity:.35;cursor:default}
   padding:.85rem 1rem;min-height:56px;font-size:14px;color:var(--ink-soft);
   display:flex;align-items:center;justify-content:center;text-align:center;
 }
+textarea{
+  width:100%;background:#fff;color:var(--ink);
+  border:1px solid rgba(16,21,26,.14);border-radius:12px;padding:10px 12px;
+  font-family:"Noto Sans KR";font-size:15px;line-height:1.5;resize:vertical;
+}
+textarea::placeholder{color:var(--rule)}
+textarea:focus-visible{outline:3px solid var(--live);outline-offset:2px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{border-bottom:1px solid rgba(16,21,26,.12);padding:7px 6px;text-align:left}
 th{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:400}
 td.n{font-family:"IBM Plex Mono",monospace}
 .sheet{background:var(--paper-2);border:1px solid rgba(16,21,26,.1);border-radius:12px;padding:12px}
+.cchip{background:#fff;border:1px solid rgba(16,21,26,.14);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:.6rem .2rem;cursor:pointer;user-select:none;transition:opacity .15s ease,background .12s ease}
+.cchip:hover{background:var(--paper-2)}
+.cchip .nm{font-size:14px;font-weight:500}
+.cchip .bt{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-soft)}
+.cchip.off{opacity:.28;pointer-events:none}
+.cbar{position:relative;border-radius:10px;min-height:56px;background:#fff;border:1px solid rgba(16,21,26,.12);overflow:hidden;margin-top:8px;transition:border-color .12s ease}
+.cbar.full{border-color:var(--hit)}
+.cbar.shake{animation:csh .28s ease}
+@keyframes csh{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.cgrid{position:absolute;inset:0;pointer-events:none}
+.cgrid i{position:absolute;top:0;bottom:0;width:1px;background:var(--rule);opacity:.55}
+.cslots{position:absolute;inset:0;display:grid}
+.cblk{min-width:0;margin:4px 2px;border-radius:8px;background:var(--paper-2);border:1px solid rgba(16,21,26,.14);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;overflow:hidden;transition:background .08s ease,transform .08s ease}
+.cblk.on{background:var(--live);border-color:var(--live);transform:scale(.97)}
+.cblk.on b,.cblk.on span{color:#fff}
+.cblk b{display:block;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;line-height:1.15}
+.cblk span{display:block;font-family:"IBM Plex Mono",monospace;font-size:9px;color:var(--ink-soft);text-align:center}
 footer{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.05em;color:var(--ink-soft);text-align:center;line-height:1.7}
 .hide{display:none}
 @media (max-width:520px){.opts.c4{grid-template-columns:1fr 1fr}.btns{grid-template-columns:1fr}}
@@ -121,9 +145,46 @@ footer{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.05
 
 <div id="msg">문제를 듣고 골라 보세요.</div>
 
+<div id="compose" class="hide">
+  <div class="qbox">
+    <p class="qtag" id="cwho"></p>
+    <p class="q">과일을 놓아 <b id="csig">네</b> 마디를 채워 보세요.</p>
+    <p style="font-size:13px;color:var(--ink-soft);margin-top:-4px">과일을 누르면 놓이고, 놓인 과일을 누르면 빠집니다. 한 마디가 다 차면 다음 마디로 넘어가요.</p>
+    <div id="cpalette" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px"></div>
+    <div id="cbar" style="display:grid;grid-template-columns:1fr 1fr;gap:6px 10px"></div>
+    <p class="cap" style="margin-top:2px"><span id="cfill"></span><span id="cstate"></span></p>
+  </div>
+  <div class="btns" style="grid-template-columns:2fr 1fr 1fr;margin-top:8px">
+    <button id="cplay">재생</button>
+    <button id="cundo">되돌리기</button>
+    <button id="cdone">다 만들었어요</button>
+  </div>
+</div>
+
+<div id="reflect" class="hide">
+  <div class="qbox">
+    <p class="qtag">마무리 · 내 생각</p>
+    <p class="q" id="rwho"></p>
+    <p style="font-size:15px;font-weight:500;margin-top:2px">어떤 게 가장 어려웠나요?</p>
+    <div class="opts c2" id="hard"></div>
+    <p style="font-size:15px;font-weight:500;margin-top:6px">더 알고 싶은 것이 있나요?</p>
+    <div class="opts c2" id="want"></div>
+    <p style="font-size:15px;font-weight:500;margin-top:6px">하고 싶은 말 <span style="font-weight:400;color:var(--ink-soft);font-size:13px">— 없으면 비워 두세요</span></p>
+    <textarea id="free" rows="2" placeholder="말로 해도 됩니다. 선생님이 대신 적어 주세요."></textarea>
+  </div>
+  <div class="btns" style="margin-top:8px">
+    <button id="toreport">결과 보기</button>
+    <button id="back">리듬 다시 만들기</button>
+  </div>
+</div>
+
 <div id="report" class="hide">
   <p class="cap" style="margin:6px 0 8px"><span>확인 결과</span><span id="stamp"></span></p>
   <div class="sheet"><table id="tbl"></table></div>
+  <p class="cap" style="margin:12px 0 8px"><span>학생이 적은 것</span></p>
+  <div class="sheet"><table id="rtbl"></table></div>
+  <p class="cap" style="margin:12px 0 8px"><span>만든 리듬 (창작)</span></p>
+  <div class="sheet"><table id="ctbl"></table></div>
   <div class="btns" style="margin-top:8px">
     <button id="csv">결과 내려받기 (CSV)</button>
     <button id="reset">처음부터</button>
@@ -167,6 +228,12 @@ var QS = [
 var STUDENTS = ['학생 A','학생 B','학생 C'];
 var who=0, qi=0, tries=0, hears=0, first='', settled=false, t0=0;
 var rec = [];  // {who, qi, first, tries, hears, sec, ok}
+
+/* 창작 단계 상태 */
+var CSIG = 4, CBARS = 4;   // 4/4 네 마디
+var cmodel = [[]];         // 마디별 과일 배열
+var comp = {};             // who -> {arr, full, edits, plays, sec}
+var cEdits = 0, cPlays = 0, cT0 = 0, cPlaying = false;
 
 var AC=null, bus=null, sess=null, noiseBuf=null, timers=[];
 
@@ -213,6 +280,15 @@ function piano(t,dur,dest){
     var g=AC.createGain(); g.gain.value=p[1];
     o.connect(g); g.connect(env); o.start(t); o.stop(t+dur+.06);
   });
+}
+function tick(t, lvl, dest){
+  var s=AC.createBufferSource(); s.buffer=noiseBuf;
+  var bp=AC.createBiquadFilter(); bp.type='bandpass';
+  bp.frequency.value = lvl===0?2800:1800; bp.Q.value=2.2;
+  var g=AC.createGain();
+  g.gain.setValueAtTime(lvl===0?.11:.055,t);
+  g.gain.exponentialRampToValueAtTime(.0001,t+.035);
+  s.connect(bp); bp.connect(g); g.connect(dest); s.start(t); s.stop(t+.06);
 }
 function lit(key){
   timers.forEach(clearTimeout); timers=[];
@@ -318,7 +394,7 @@ function load(){
   $('qtag').textContent='개념 · '+Q.c;
   $('q').textContent=Q.q;
   $('prog').textContent=STUDENTS[who]+' · '+(qi+1)+'/'+QS.length;
-  $('next').textContent=(qi===QS.length-1)?'결과 보기':'다음';
+  $('next').textContent=(qi===QS.length-1)?'마무리':'다음';
   drawStim(); drawOpts(); drawSteps();
   say('[소리 듣기]를 눌러 문제를 들어 보세요.');
 }
@@ -327,18 +403,203 @@ function drawWho(){
   STUDENTS.forEach(function(s,i){
     var b=document.createElement('button');
     b.textContent=s; b.className=(i===who?'sel':'');
-    b.onclick=function(){ who=i; qi=0; drawWho(); load(); $('report').classList.add('hide'); };
+    b.onclick=function(){ who=i; qi=0; drawWho(); hideReflect(); hideCompose(); load(); $('report').classList.add('hide'); };
     w.appendChild(b);
   });
 }
 
 $('hear').onclick=function(){ hears++; seq(QS[qi].hear || [], true); say('잘 들어 보세요.'); };
+
+/* 마무리 — 학생이 스스로 짚는 부분 */
+var HARD = ['더 긴 것 고르기','같은 길이 찾기','마디 채우기','어렵지 않았어요'];
+var WANT = ['더 긴 과일도 있나요','내 리듬 만들고 싶어요','친구 리듬 듣고 싶어요','없어요'];
+var refl = {};  // who -> {hard, want, free}
+
+function drawReflect(){
+  $('rwho').textContent = STUDENTS[who];
+  var r = refl[who] || {};
+  [['hard', HARD, $('hard')], ['want', WANT, $('want')]].forEach(function(set){
+    var field = set[0], list = set[1], box = set[2];
+    box.innerHTML = '';
+    list.forEach(function(txt){
+      var d = document.createElement('div');
+      d.className = 'o' + (r[field]===txt ? ' sel' : '');
+      d.setAttribute('role','button'); d.tabIndex = 0;
+      d.innerHTML = '<b style="font-size:14px">'+txt+'</b>';
+      var go = function(){
+        refl[who] = refl[who] || {};
+        refl[who][field] = (refl[who][field]===txt) ? '' : txt;
+        drawReflect();
+      };
+      d.onclick = go;
+      d.onkeydown = function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } };
+      box.appendChild(d);
+    });
+  });
+  $('free').value = r.free || '';
+}
+$('free').oninput = function(){
+  refl[who] = refl[who] || {};
+  refl[who].free = this.value;
+};
+function showReflect(){
+  document.querySelector('.qbox').classList.add('hide');
+  $('steps').classList.add('hide');
+  $('msg').classList.add('hide');
+  document.querySelector('.btns').classList.add('hide');
+  $('compose').classList.add('hide');
+  $('report').classList.add('hide');
+  drawReflect();
+  $('reflect').classList.remove('hide');
+  $('reflect').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function hideReflect(){
+  $('reflect').classList.add('hide');
+  document.querySelector('.qbox').classList.remove('hide');
+  $('steps').classList.remove('hide');
+  $('msg').classList.remove('hide');
+  document.querySelector('.btns').classList.remove('hide');
+}
+$('back').onclick = function(){ hideReflect(); showCompose(); };
+$('toreport').onclick = function(){ $('reflect').classList.add('hide'); report(); };
+
+/* ---------- 창작 단계 ---------- */
+function cUsed(m){ var s=0; cmodel[m].forEach(function(k){ s+=UNITS[k]; }); return s; }
+function cFull(){ for(var i=0;i<CBARS;i++){ if(cUsed(i)!==CSIG) return false; } return true; }
+function cState(t,c){ $('cstate').textContent=t; $('cstate').style.color=c||'var(--ink-soft)'; }
+function drawCPalette(){
+  var p=$('cpalette'); p.innerHTML='';
+  ['gyul','sagwa','banana','pine'].forEach(function(k){
+    var d=document.createElement('div');
+    d.className='cchip'+(UNITS[k]>CSIG?' off':'');
+    d.innerHTML='<span class="nm">'+NAME[k]+'</span><span class="bt">'+UNITS[k]+'박</span>';
+    d.onclick=function(){ cPut(k); };
+    p.appendChild(d);
+  });
+}
+function drawCBar(){
+  var box=$('cbar'); box.innerHTML='';
+  for(var m=0;m<CBARS;m++){
+    var cell=document.createElement('div'); cell.style.cssText='display:flex;align-items:center;gap:6px';
+    var nm=document.createElement('span');
+    nm.style.cssText='flex:0 0 auto;width:16px;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-soft);text-align:right';
+    nm.textContent=(m+1);
+    var bar=document.createElement('div'); bar.className='cbar'+(cUsed(m)===CSIG?' full':''); bar.dataset.bar=m;
+    bar.style.cssText='flex:1;min-height:44px;margin-top:0';
+    var g=document.createElement('div'); g.className='cgrid';
+    for(var i=1;i<CSIG;i++){ var l=document.createElement('i'); l.style.left=(i/CSIG*100)+'%'; g.appendChild(l); }
+    bar.appendChild(g);
+    var slots=document.createElement('div'); slots.className='cslots';
+    var cols=cmodel[m].map(function(k){ return UNITS[k]+'fr'; });
+    var rest=CSIG-cUsed(m); if(rest>0) cols.push(rest+'fr');
+    slots.style.gridTemplateColumns=cols.join(' ')||'1fr';
+    cmodel[m].forEach(function(k,idx){
+      var b=document.createElement('div'); b.className='cblk'; b.dataset.bar=m; b.dataset.idx=idx;
+      b.innerHTML='<span><b>'+NAME[k]+'</b><span>'+UNITS[k]+'박</span></span>';
+      b.onclick=function(){ cPull(m,idx); };
+      slots.appendChild(b);
+    });
+    if(rest>0) slots.appendChild(document.createElement('div'));
+    bar.appendChild(slots);
+    cell.appendChild(nm); cell.appendChild(bar); box.appendChild(cell);
+  }
+  var tot=0; for(var q=0;q<CBARS;q++) tot+=cUsed(q);
+  $('cfill').textContent=tot+' / '+(CSIG*CBARS)+'박';
+}
+function cPut(k){
+  var m=0; for(var i=0;i<CBARS;i++){ if(cUsed(i)<CSIG){ m=i; break; } m=i; }
+  if(cUsed(m)+UNITS[k]>CSIG){
+    cState(NAME[k]+'은 '+UNITS[k]+'박이라 자리가 없어요. '+(CSIG-cUsed(m))+'박 남았어요.','var(--live)');
+    var bar=document.querySelector('.cbar[data-bar="'+m+'"]');
+    if(bar){ bar.classList.add('shake'); setTimeout(function(){ bar.classList.remove('shake'); },300); }
+    cEdits++; return;
+  }
+  cmodel[m].push(k); cEdits++; drawCBar();
+  ready(function(){ var g=openSess(); piano(AC.currentTime+.05, 60/BPM*UNITS[k]-.04, g); });
+  var doneBars=0; for(var b=0;b<CBARS;b++){ if(cUsed(b)===CSIG) doneBars++; }
+  if(cFull()) cState('네 마디를 모두 채웠어요. 재생해서 들어보세요.','var(--hit)');
+  else if(cUsed(m)===CSIG) cState((m+1)+'번 마디 완성 · '+doneBars+'/'+CBARS+'마디 채움','var(--hit)');
+  else cState(NAME[k]+' 놓음 · '+(m+1)+'번 마디에 '+(CSIG-cUsed(m))+'박 남음','var(--ink-soft)');
+}
+function cPull(m,idx){
+  var k=cmodel[m][idx]; cmodel[m].splice(idx,1); cEdits++; drawCBar();
+  cState(NAME[k]+' 뺐어요 · '+(CSIG-cUsed(m))+'박 남음','var(--miss)');
+}
+function cStop(){
+  cPlaying=false; timers.forEach(clearTimeout); timers=[]; killSess();
+  $('cplay').textContent='재생';
+  document.querySelectorAll('.cblk').forEach(function(b){ b.classList.remove('on'); });
+}
+function cPlayFn(){
+  if(cPlaying){ cStop(); return; }
+  var tot=0; for(var i=0;i<CBARS;i++) tot+=cUsed(i);
+  if(!tot){ cState('먼저 과일을 놓아 보세요.','var(--miss)'); return; }
+  cPlays++;
+  ready(function(){
+    cPlaying=true; $('cplay').textContent='정지';
+    var g=openSess(), spb=60/BPM, t=AC.currentTime+.15;
+    for(var m=0;m<CBARS;m++){ for(var i=0;i<CSIG;i++){ tick(t+spb*(m*CSIG+i), i===0?0:1, g); } }
+    for(var m2=0;m2<CBARS;m2++){
+      var at=0;
+      for(var j=0;j<cmodel[m2].length;j++){
+        var k=cmodel[m2][j], u=UNITS[k];
+        piano(t+spb*(m2*CSIG+at), spb*u-.04, g);
+        (function(mm,jj,delay){ timers.push(setTimeout(function(){
+          document.querySelectorAll('.cblk').forEach(function(o){ o.classList.remove('on'); });
+          var el=document.querySelector('.cblk[data-bar="'+mm+'"][data-idx="'+jj+'"]');
+          if(el) el.classList.add('on');
+        }, delay)); })(m2,j,spb*(m2*CSIG+at)*1000+150);
+        at+=u;
+      }
+    }
+    timers.push(setTimeout(cStop, spb*CBARS*CSIG*1000+260));
+  });
+}
+function arrText(){
+  return cmodel.map(function(bar){ return bar.map(function(k){ return NAME[k]; }).join(' '); }).join(' | ');
+}
+function showCompose(){
+  document.querySelector('.qbox').classList.add('hide');
+  $('steps').classList.add('hide'); $('msg').classList.add('hide');
+  document.querySelector('.btns').classList.add('hide');
+  $('reflect').classList.add('hide'); $('report').classList.add('hide');
+  CSIG=4; CBARS=4;
+  var saved=comp[who];
+  cmodel = saved && saved.arr ? saved.arr.map(function(a){ return a.slice(); }) : [[],[],[],[]];
+  cEdits=0; cPlays=0; cT0=Date.now(); cStop();
+  $('cwho').textContent=STUDENTS[who]+' · 나만의 리듬 만들기';
+  drawCPalette(); drawCBar();
+  cState('과일을 눌러 마디를 채워 보세요.');
+  $('compose').classList.remove('hide');
+  $('compose').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function hideCompose(){
+  $('compose').classList.add('hide');
+  document.querySelector('.qbox').classList.remove('hide');
+  $('steps').classList.remove('hide'); $('msg').classList.remove('hide');
+  document.querySelector('.btns').classList.remove('hide');
+}
+$('cplay').onclick = cPlayFn;
+$('cundo').onclick = function(){
+  for(var m=CBARS-1;m>=0;m--){ if(cmodel[m].length){ cPull(m, cmodel[m].length-1); return; } }
+  cState('뺄 과일이 없어요.','var(--miss)');
+};
+$('cdone').onclick = function(){
+  var doneBars=0; for(var b=0;b<CBARS;b++){ if(cUsed(b)===CSIG) doneBars++; }
+  comp[who] = { arr:cmodel.map(function(a){ return a.slice(); }), full:cFull(),
+                bars:doneBars, total:CBARS,
+                edits:cEdits, plays:cPlays, sec:Math.round((Date.now()-cT0)/100)/10, text:arrText() };
+  cStop();
+  $('compose').classList.add('hide');
+  showReflect();
+};
+
 $('next').onclick=function(){
   if(!settled && !rec.filter(function(x){ return x.who===who && x.qi===qi; })[0]){
     rec.push({ who:who, qi:qi, first:first||'—', tries:tries, hears:hears,
                sec:Math.round((Date.now()-t0)/100)/10, ok:false, skip:true });
   }
-  if(qi<QS.length-1){ qi++; load(); } else report();
+  if(qi<QS.length-1){ qi++; load(); } else showCompose();
 };
 
 function report(){
@@ -355,6 +616,28 @@ function report(){
     });
     t.innerHTML=h;
   }
+  var rt = $('rtbl');
+  var lines = [];
+  STUDENTS.forEach(function(s, w){
+    var r = refl[w];
+    if(!r) return;
+    if(!r.hard && !r.want && !(r.free||'').trim()) return;
+    lines.push('<tr><td>'+s+'</td><td>'+(r.hard||'—')+'</td><td>'+(r.want||'—')+'</td><td>'+((r.free||'').trim()||'—')+'</td></tr>');
+  });
+  rt.innerHTML = lines.length
+    ? '<tr><th>학생</th><th>어려웠던 것</th><th>더 알고 싶은 것</th><th>하고 싶은 말</th></tr>' + lines.join('')
+    : '<tr><td>적은 내용이 없습니다.</td></tr>';
+  var ct = $('ctbl');
+  var clines = [];
+  STUDENTS.forEach(function(s, w){
+    var c = comp[w]; if(!c) return;
+    var fillTxt = c.full ? '네 마디 모두' : (c.bars+'/'+c.total+'마디');
+    clines.push('<tr><td>'+s+'</td><td>'+(c.text||'—')+'</td><td>'+fillTxt
+      +'</td><td class="n">'+c.edits+'</td><td class="n">'+c.plays+'</td><td class="n">'+c.sec+'초</td></tr>');
+  });
+  ct.innerHTML = clines.length
+    ? '<tr><th>학생</th><th>만든 리듬</th><th>채운 마디</th><th>놓고·뺀 횟수</th><th>들음</th><th>시간</th></tr>' + clines.join('')
+    : '<tr><td>만든 리듬이 없습니다.</td></tr>';
   $('stamp').textContent=new Date().toLocaleString('ko-KR');
   $('report').classList.remove('hide');
   $('report').scrollIntoView({ behavior:'smooth', block:'start' });
@@ -367,6 +650,20 @@ $('csv').onclick=function(){
       (r.first==='—'?'—':labelOf(r.first)), r.tries, r.hears, r.sec,
       (r.skip?'미응답':r.ok?'한 번에':'다시 시도')].join(','));
   });
+  out.push('');
+  out.push('학생이 적은 것');
+  out.push('학생,어려웠던 것,더 알고 싶은 것,하고 싶은 말');
+  STUDENTS.forEach(function(s, w){
+    var r = refl[w]; if(!r) return;
+    out.push([s, r.hard||'—', r.want||'—', '"'+((r.free||'').trim().replace(/"/g,'""')||'—')+'"'].join(','));
+  });
+  out.push('');
+  out.push('만든 리듬 (창작)');
+  out.push('학생,만든리듬,채운마디,완성여부,놓고뺀횟수,들은횟수,걸린시간(초)');
+  STUDENTS.forEach(function(s, w){
+    var c = comp[w]; if(!c) return;
+    out.push([s, '"'+(c.text||'—')+'"', c.bars+'/'+c.total, (c.full?'모두 채움':'덜 채움'), c.edits, c.plays, c.sec].join(','));
+  });
   var blob=new Blob(['\ufeff'+out.join('\n')],{type:'text/csv;charset=utf-8'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
@@ -375,7 +672,8 @@ $('csv').onclick=function(){
 };
 $('reset').onclick=function(){
   if(!confirm('결과를 모두 지우고 처음부터 시작합니다. 내려받지 않은 기록은 사라집니다.')) return;
-  rec=[]; who=0; qi=0; $('report').classList.add('hide'); drawWho(); load();
+  rec=[]; refl={}; comp={}; who=0; qi=0;
+  $('report').classList.add('hide'); hideReflect(); hideCompose(); drawWho(); load();
 };
 
 drawWho(); load();
