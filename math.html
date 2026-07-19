@@ -160,7 +160,7 @@
 
   <nav class="tabs" id="tabs" aria-label="도형 고르기"></nav>
   <main id="main"></main>
-  <p class="footnote">둘레는 <b style="color:var(--peri)">빙 두른 길</b>, 넓이는 <b style="color:var(--area)">안쪽을 채운 칸 수</b> · 길이 단위는 모두 1칸 = 1</p>
+  <p class="footnote">둘레는 <b style="color:var(--peri)">빙 두른 길</b>, 넓이는 <b style="color:var(--area)">안쪽을 채운 칸 수</b> · 1칸 = 1cm (넓이는 1cm²)</p>
 </div>
 
 <script>
@@ -268,7 +268,7 @@ function buildIntro(){
   const walker=el('circle',{class:'walker',r:11,cx:gx(1),cy:gy(1)});
   psvg.appendChild(walker);
   p.appendChild(psvg);
-  const pcap=tag('p',null,'도형을 빙 둘러싼 길이가 둘레예요. (여기선 5+3+5+3 = 16)');
+  const pcap=tag('p',null,'도형을 빙 둘러싼 길이가 둘레예요. (여기선 5+3+5+3 = 16cm)');
   p.appendChild(pcap);
   const pbtn=tag('button','btn o','▶ 한 바퀴 돌기');pbtn.style.marginTop='10px';
   p.appendChild(pbtn);
@@ -283,7 +283,7 @@ function buildIntro(){
   const acount=el('text',{x:gx(3.5),y:gy(2.5)+8,'text-anchor':'middle','font-size':40,'font-weight':800,fill:'var(--area)',opacity:0});
   asvg.appendChild(acount);
   a.appendChild(asvg);
-  const acap=tag('p',null,'안쪽을 빈틈없이 채운 칸 수가 넓이예요. (여기선 5 × 3 = 15칸)');
+  const acap=tag('p',null,'안쪽을 빈틈없이 채운 칸 수가 넓이예요. (여기선 5 × 3 = 15cm²)');
   a.appendChild(acap);
   const abtn=tag('button','btn p','▶ 칸 채우기');abtn.style.marginTop='10px';
   a.appendChild(abtn);
@@ -406,7 +406,7 @@ function buildShape(id){
       const off=0.55;
       const lab=el('text',{class:'lenlabel','text-anchor':'middle',
         x:gx(mp2[0])+nx/nl*S*off, y:gy(mp2[1])+ny/nl*S*off+6});
-      lab.textContent=lens[i];
+      lab.textContent=lens[i]+'cm';
       function tapSide(){
         if(hit.dataset.done)return;hit.dataset.done='1';
         line.classList.add('done');lab.classList.add('show');
@@ -420,7 +420,7 @@ function buildShape(id){
     stage.appendChild(svg);
     function updatePeri(){
       const eq=tag('div','eq peri');
-      eq.innerHTML=`${tally.join(' + ')} = <span class="res">${sum}</span> <span class="unit">(칸)</span>`;
+      eq.innerHTML=`${tally.map(v=>v+'cm').join(' + ')} = <span class="res">${sum}cm</span>`;
       readout.innerHTML='';readout.appendChild(eq);
       if(done===pts.length){
         const form=(id==='square')?cfg.periForm(state.square):cfg.periForm();
@@ -462,10 +462,10 @@ function buildShape(id){
         cellsG.append(rect,num);
         setTimeout(()=>{rect.classList.add('show');n++;num.textContent=n;num.classList.add('show');
           readout.className='readout area';
-          readout.innerHTML=`<span class="eq area">채운 칸 = <span class="res">${n}</span> <span class="unit">칸</span></span>`;
+          readout.innerHTML=`<span class="eq area">넓이 = <span class="res">${n}</span> cm²</span>`;
           if(n===list.length){
             const form=(id==='square')?cfg.areaForm(state.square):cfg.areaForm();
-            readout.innerHTML=`<span class="eq area">${form} = <span class="res">${n}</span> <span class="unit">(칸)</span></span>`+
+            readout.innerHTML=`<span class="eq area">${form} = <span class="res">${n}</span> cm²</span>`+
               `<div style="width:100%;margin-top:6px"><span class="cheer">🎉 넓이 완성!</span></div>`;
             play.disabled=false;
           }
@@ -492,7 +492,7 @@ function buildShape(id){
     function finish(m){
       const form=cfg.areaForm(),val=cfg.area();
       readout.className='readout area';
-      readout.innerHTML=`<span class="eq area">${form} = <span class="res">${val}</span> <span class="unit">(칸)</span></span>`+
+      readout.innerHTML=`<span class="eq area">${form} = <span class="res">${val}</span> cm²</span>`+
         (m.cap?`<div style="width:100%;color:var(--muted);font-weight:700;font-size:14px;margin-top:4px">${m.cap}</div>`:'')+
         `<div style="width:100%;margin-top:6px"><span class="cheer">🎉 넓이 완성!</span></div>`;
       actions.querySelectorAll('button').forEach(x=>x.disabled=false);
@@ -602,7 +602,7 @@ function drawQuizSVG(q){
   (q.dash||[]).forEach(d=>svg.appendChild(el('line',{x1:gx(d[0]),y1:gy(d[1]),x2:gx(d[2]),y2:gy(d[3]),
     stroke:'var(--area)','stroke-width':3,'stroke-dasharray':'6 5'})));
   q.pts.forEach(p=>svg.appendChild(el('circle',{cx:gx(p[0]),cy:gy(p[1]),r:4,fill:'var(--ink)'})));
-  q.labels.forEach(l=>{const t=el('text',{x:gx(l.c),y:gy(l.r)+5,'text-anchor':'middle','font-size':17,'font-weight':800,fill:stroke});t.textContent=l.t;svg.appendChild(t);});
+  q.labels.forEach(l=>{const t=el('text',{x:gx(l.c),y:gy(l.r)+5,'text-anchor':'middle','font-size':17,'font-weight':800,fill:stroke});t.textContent=l.t+'cm';svg.appendChild(t);});
   return svg;
 }
 function buildQuiz(){
@@ -633,7 +633,7 @@ function buildQuiz(){
     nextWrap.innerHTML='';
     choices.innerHTML='';
     shuffle(q.choices).forEach(v=>{
-      const b=tag('button','choice',v+'칸');
+      const b=tag('button','choice',v+(q.kind==='peri'?'cm':'cm²'));
       b.onclick=()=>{
         if(v===q.ans){
           b.classList.add('correct');
